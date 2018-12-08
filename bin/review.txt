@@ -1,0 +1,200 @@
+CCS '18 Paper #856 Reviews and Comments
+===========================================================================
+Paper #856 vNIDS: Towards Elastic Security with Safe and Efficient
+Virtualization of Network Intrusion Detection Systems
+
+
+Review #856A
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Brief paper summary (2-3 sentences)
+-----------------------------------
+This paper proposes an innovative NIDS architecture to improve the efficiency of traditional NIDS without missing attacks. There are two main ideas in this paper, reducing shared statements by separating local and global statements, and dividing monolithic NIDS into microservices. It uses some static code analysis to achieve it.
+
+Strengths
+---------
+1.Well writing, easy to read and understand;
+2.Good result, significantly reduce the overhead;
+3.Well explained how to turn a monolithic architecture into a non-monolithic one, which contributes to better organizing system;
+4.A virtualization of NDIS which means it can be used to existing works without compatible problems;
+
+Weaknesses
+----------
+1.Lack of innovation,
+2.Lack of evaluation, don't provide the seriousness of the problem
+
+Detailed comments for the authors
+---------------------------------
+1.There're efficiency problems when the network traffic is too big. But there is no related evaluation, for example, DDOS attacks as you mentioned in the paper. We only know that this architecture could improve the efficiency, but we don't know if it is enough.
+2.The attacks used in evaluation part are very simple, the detectors of these attacks are not complicate, so we don't know how it is working at that time.
+3.How can it works in an ordinary network while the architecture uses some features of SDN/NFV.
+4.How much time could be used to update a new detection policy while there're lots of offline analysis to be done.
+
+
+
+Review #856B
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Brief paper summary (2-3 sentences)
+-----------------------------------
+In this work, authors proposed a new virtualization architecture of NIDS, called vNIDS, to achieve efficient and effective detection on intrusions.
+
+The effective detection benefits from the states sharing mechanism between different instances. The efficiency is two-fold: sharing only global detection states among instances helps to decrease communication cost; functionality splitting of the detection logic helps to keep the instances °∞slim°± enough so as to make best use of resources and make quick scaling in/out according to the network traffic. Static program analysis is leveraged to conduct the systematic and automatic analysis on global/local detection states classification as well as the splitting of monolithic program into microservices. They implemented a prototype and evaluated the effectiveness and efficiency.
+
+Strengths
+---------
+1.	Well written and solves an important problem.
+2.	Delicate leverage on static program analysis to solve important tasks for the virtualization of NIDS.
+3.	The performance of vNIDS is good, effective on intrusion detection, agile launching and scaling, robust on capacity.
+
+Weaknesses
+----------
+1.	Lacking evaluation on the static program analysis algorithm, like the accuracy of the classification.
+2.	Lacking evaluation on the number of the forward points in the microservices, which can have bad effect on the processing capacity.
+
+Detailed comments for the authors
+---------------------------------
+1. The two motivations are the effective intrusion detection and non-monolithic NIDS provisioning. However, for the first one, your solutions contributes only to the automatic classification of detection states based on some exiting program analysis tool, since the concepts of global and local detection states have been proposed as in [84]. Your analysis is useful but the contribution is limited. Is there any false positive or false negative with your algorithm?
+
+2. The design for the non-monolithic NIDS provisioning is the most innovative part. The monolithic NIDS is firstly decomposed on the logic structure, and then further on the functionality of the DL, i.e., either used to analysis the packet header or the payload. A program slicing tool is used to do the decomposing automatically. With the chaining design, complete detection tasks are also guaranteed for the non-monolithic NIDS provisioning. From the evaluation results, the processing capacity is greatly improved and the launching time is shorten compared to Bro. However, you did not mention how the °∞forward°± communication can affect the communication cost or processing capacity. Like the number of the forward points or whether they are involved in the loop like the example in Appendix C.
+
+3. As static program analysis is used to finish all the important tasks in your design, like the detection states classification and the DL functionality splitting. It is an appealing point of this work. Why do not conduct any evaluation on the ability and performance of the tools? The DLPs used in the experiments are written by yourselves, are they much simpler than other practical implementations? Since the complexity of the code can have great effect on the performance of the static analysis tool, I still think it°Øs better to get more benchmark testing.
+
+4. You use different examples to demonstrate how program analysis can be used to classify different detection states and decompose DLPs. Why do not use the same example throughout the paper? Readers can be curious about how well these two analyses can be used in a single detection program.
+
+=============Typos======================
+1.	Page 2: This invariant configuration significantly mitigate the overhead°≠=>mitigates
+2.	Page 6: an the payload-based°≠ an=>And
+3.	Page 7: there still some constraints of °≠=> there are°≠
+4.	Page 7: Then, the NE handlers the °≠ => handles
+
+
+
+Review #856C
+===========================================================================
+
+Overall merit
+-------------
+3. Weak accept
+
+Reviewer expertise
+------------------
+2. Some familiarity
+
+Brief paper summary (2-3 sentences)
+-----------------------------------
+This paper presents vNIDS, an effective and efficient virtualization system of NIDS. vNIDS applies known program analysis techniques to the domain of detection logic programs (DLPs). Specifically, it uses data flow analysis to detect variables that are shared by flows. It uses program slicing to partition DLPs into three micro services: header, protocol and payload.
+
+Strengths
+---------
+it makes sense to minimize the amount of shared state and break things into micro services
+
+Weaknesses
+----------
+It's not clear if the PL techniques are necessary.  Can we ask developers to write their DLPs in a way such that shared state is annotated and computation is already broken into components.
+
+Detailed comments for the authors
+---------------------------------
+It's not clear how complex DLPs are. If they are simple programs, we probably don't need PL techniques. Instead, a developer can rewrite them to meet vNIDS's requirement: explicitly labeled shared state and divided into micro services. It would be good to use a sample DLP to drive the presentation of the paper.
+
+Why are there only three kinds of micro services: header-based protection, protocol parsing, and payload-based detection? There doesn't seem to be a principal in choosing them. Would it make sense to have more fine-grained components (e.g., break protocol parsing to different protocols or payload-based detection to different algorithms)?
+
+In the evaluation, the paper compares vNIDS with Bro Cluster. Can Bro Cluster dynamically grow? Table 1 shows the DLPs tested in this paper. It would be helpful to show the size of the program to reflect the complexity.
+
+typo: "the this" in page 6.
+
+
+
+Review #856D
+===========================================================================
+
+Overall merit
+-------------
+4. Accept
+
+Reviewer expertise
+------------------
+3. Knowledgeable
+
+Brief paper summary (2-3 sentences)
+-----------------------------------
+
+In this paper, authors propose a novel Network Intrusion Detection System (NIDS) architecture in the context of Emerging Network Function Virtualization (NFV) and Software-Defined Networking (SDN), called vNIDS, which enables safe and efficient virtualization of NIDSes. Authors define two design objectives: Safe (effectiveness) and Efficient (non-monolithic NIDS provisioning).  To address the effective intrusion detection challenge, authors classify detection states of virtualized NIDSes into local and global detection states to minimize the amount of detection states shared between instances.
+
+To address the non-monolithic NIDS provisioning challenge, they decompose NIDSes into three microservices, header-based detection, protocol parse, and payload-based detection. Authors exploit program analysis techniques to identify local and global detection states and partition the detection logic programs into microservices. They implement a prototype of vNIDS to demonstrate the feasibility of the proposed approach. Results demonstrate that vNIDS could offer both effective intrusion detection and efficient provisioning for NIDS virtualization.
+
+Strengths
+---------
+
+
+Virtualizing NIDS in SDN is new and useful.
+
+The idea of applying program analysis techniques for identifying scopes of detection states (variables) and program partitioning is very interesting.
+
+Authors have implemented a prototype of vNIDS.
+
+Weaknesses
+----------
+
+
+Authors need to justify the feasibility and effectiveness of using program slicing for identifying scopes of detection states (variables) and for program partitioning.
+
+Authors need to give more details about how to determine the scopes of detection states.
+
+Detailed comments for the authors
+---------------------------------
+This is a strong paper. I particularly like the use of program analysis in intrusion detection. I think it's quite novel. It will be helpful if authors provide a description of the system model (assumptions) in this work. It seems authors assume that traditional DLP programs are available. The task is to port traditional DLP to SDN/NFV based NIDS.
+
+Authors need to justify the feasibility and effectiveness of using program slicing for identifying scopes of detection states (variables) and for program partitioning. Authors need to provide results to show whether detection logic programs can always be partitioned into header-based detection, protocol parse, and payload-based detection microservices. How about the accuracy of program analysis against these detection logic programs?
+
+When inferring the scope of detection states by analyzing the control-flow of the detection logic program (DLP) and NIDS engine (NE), and classify the detection states based on their scopes, do the authors need to consider data flow dependency in the analysis? The constructed control flow graph (CFG) is inter-procedural or intra-procedural?
+
+For the definition of Per-flow scope, authors mentioned "these states must be created after a flow initiates and destroyed before a flow terminates." I think it should be "these states must be created after a flow initiates and destroyed right after the flow terminates".
+
+For the definition of Multi-flow scope, authors mentioned "The lifetime of multi-flow detection states persists beyond the duration of a single flow. Therefore, they are created before a flow initiates or destroyed after a flow terminates." It probably should be "destroyed after all monitored flows terminate".
+
+When identifying the packet and flow record destroy statements, the proposed approach is based on manually checking the source code of IP reassembly implementation. It may suffer a scalability issue if the code size is large. Is it possible to automatically identify the packet and flow record destroy statements ?
+
+In the proposed design, for multi-flow scope variables, the values will be shared with all instances. Why not identify all relevant instances regarding a multi-flow scope variable (but not all instances), to reduce the communication cost when updating the values of multi-flow scope variables?
+
+For the evaluation, authors may want to show results of the static program analysis. For example, how many multi-flow scope,  per-flow scope,  per-packet scope, variables are identified?
+
+Below is a related paper.
+Ke Tian, Danfeng Yao, Barbara Ryder, Gang Tan, and Guojun Peng.
+Code-heterogeneity Aware Detection for Repackaged Malware.
+IEEE Transactions on Dependable and Secure Computing (TDSC). 2017.
+
+Typos:
+each NIDS instance may receive only a part of flows originated from the same scanner and maintains a counter individually. ==> maintain
+
+network traffic can be redistribute among the  ==> redistributed
+
+leveraging SDN, we can .. ==> by leveraging SDN,
+
+We define the this processing ==> delete "the"
+
+The third processing, which is specified by users, implement various DLs. ==> implements
+
+an the payload-based detection microservice devoted to executing the payload-based DLPs.
+
+there still some constrains of how the microservice chains can be composed. ==> there are ...
+
+The background traffic are, The labeled attack traffic is ...
+
+In the evaluation, sometimes authors use the "past tense", sometimes use the "present tense"
